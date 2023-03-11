@@ -4,10 +4,8 @@ import { HTTPError } from '../interfaces/error.js';
 import { Repo } from './repo.interface';
 import { UserModel } from './users.mongo.model.js';
 const debug = createDebug('RRSS:repo:users');
-
 export class UsersMongoRepo implements Repo<User> {
   private static instance: UsersMongoRepo;
-
   public static getInstance(): UsersMongoRepo {
     if (!UsersMongoRepo.instance) {
       UsersMongoRepo.instance = new UsersMongoRepo();
@@ -22,7 +20,7 @@ export class UsersMongoRepo implements Repo<User> {
 
   async query(): Promise<User[]> {
     debug('Instantiated at constructor at query method');
-    const data = await UserModel.find().populate('relations');
+    const data = await UserModel.find().populate(['friends', 'enemies']);
     return data;
   }
 
@@ -56,7 +54,7 @@ export class UsersMongoRepo implements Repo<User> {
   }
 
   async destroy(id: string): Promise<void> {
-    debug('destroy');
+    debug(id);
     const data = await UserModel.findByIdAndDelete(id);
     if (!data)
       throw new HTTPError(
